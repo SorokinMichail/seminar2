@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+
 void cheker(int** A, bool* c, int n, int max)
 {
 	for (int i = max; i > 0; i--) {
@@ -14,14 +15,19 @@ void cheker(int** A, bool* c, int n, int max)
 	}
 }
 
+int max(int x, int y)
+{
+	return (x > y ? x : y);
+}
+
 int main()
 {
 	int length = 0;
 	int** matrix = (int**)malloc(sizeof(int*));
 	FILE* graf;
-	char* fname = "gr.gv";
+	char fname[] = "gr.gv";
 	graf = fopen(fname, "w");
-	fprintf(graf, "digraph g{");
+	fprintf(graf, "graph g{");
 	printf("select graph: \n");
 	char c = getchar();
 	char boofer = '&';
@@ -29,7 +35,23 @@ int main()
 		if (c == '\n')
 		{
 			fprintf(graf, ";");
-			boofer = '&';
+			if (boofer - '0' > length) {
+				int n = boofer;
+				matrix = (int**)realloc(matrix, (n + 1) * sizeof(int*));
+				for (int i = length + 1; i <= n; i++) {
+					matrix[i] = (int*)malloc(2 * sizeof(int));
+				}
+				for (int i = 1; i <= n; i++) {
+					matrix[i] = (int*)realloc(matrix[i], (n + 1) * sizeof(int));
+					for (int j = 1; j <= n; j++) {
+						if (matrix[i][j] != 1)matrix[i][j] = 0;
+					}
+				}
+
+				length = n;
+				boofer = '&';
+
+			}
 		}
 		fprintf(graf, "%c", c);
 		if (isdigit(c))
@@ -41,10 +63,10 @@ int main()
 					int n = max(boofer - '0', c - '0');
 					matrix = (int**)realloc(matrix, (n + 1) * sizeof(int*));
 					for (int i = length + 1; i <= n; i++) {
-						matrix[i] = (int*)malloc(2*sizeof(int));
+						matrix[i] = (int*)malloc(2 * sizeof(int));
 					}
 					for (int i = 1; i <= n; i++) {
-						matrix[i] = (int*)realloc(matrix[i], (n+1) * sizeof(int));
+						matrix[i] = (int*)realloc(matrix[i], (n + 1) * sizeof(int));
 						for (int j = 1; j <= n; j++) {
 							if (matrix[i][j] != 1)matrix[i][j] = 0;
 						}
@@ -62,10 +84,10 @@ int main()
 	fclose(graf);
 	bool* chek = (bool*)malloc((length + 1) * sizeof(bool));
 	for (int i = 1; i < length; i++)chek[i] = false;
-	chek[length] = true;
-	cheker(matrix, chek, length,length);
+	chek[1] = true;
+	cheker(matrix, chek, 1, length);
 	bool f = true;
-	for (int i = 1; i <= length; i++)
+	for (int i = 1; i <= length + 1; i++)
 		if (!chek[i])f = false;
 	if (f) printf("True");
 	else printf("False");
